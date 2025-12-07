@@ -1,4 +1,3 @@
-using Npgsql;
 using MiniTweeterBackend.Data;
 using Microsoft.EntityFrameworkCore;
 
