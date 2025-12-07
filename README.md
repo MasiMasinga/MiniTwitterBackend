@@ -55,6 +55,7 @@ The application should now be running at `http://localhost:5145`.
 ### Make Payment Endpoints
 
 - `POST /api/Payment`: Make Payment to Increase Tweets Quota.
+- `GET /api/Payment`: Verify Payment to Check Status.
 
 ## Running the Application Without Docker
 
