@@ -52,6 +52,10 @@ The application should now be running at `http://localhost:5145`.
 - `POST /api/Retweet/<id>/Comment`: Retweet a Comment.
 - `POST /api/Retweet/<id>/Tweet`: Retweet a Tweet.
 
+### Make Payment Endpoints
+
+- `POST /api/Payment`: Make Payment to Increase Tweets Quota.
+
 ## Running the Application Without Docker
 
 
