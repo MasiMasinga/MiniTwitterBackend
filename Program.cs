@@ -2,15 +2,14 @@ using MiniTweeterBackend.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Services.AddOpenApi();
-
-var app = builder.Build();
-
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
