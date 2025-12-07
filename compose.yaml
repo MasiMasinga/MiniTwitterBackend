@@ -1,0 +1,7 @@
+﻿services:
+  minitwitterbackend:
+    image: minitwitterbackend
+    build:
+      context: .
+      dockerfile: Dockerfile
+

@@ -1,0 +1,6 @@
+@MiniTwitterBackend_HostAddress = http://localhost:5145
+
+GET {{MiniTwitterBackend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

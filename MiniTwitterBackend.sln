@@ -1,0 +1,21 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiniTwitterBackend", "MiniTwitterBackend.csproj", "{299F815D-729C-4159-A511-C403F7731052}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0057DBE4-8AA5-4C5A-A60F-A853FDE80894}"
+	ProjectSection(SolutionItems) = preProject
+		compose.yaml = compose.yaml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{299F815D-729C-4159-A511-C403F7731052}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{299F815D-729C-4159-A511-C403F7731052}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{299F815D-729C-4159-A511-C403F7731052}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{299F815D-729C-4159-A511-C403F7731052}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,19 @@
+# Build directories
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+
+# Logs
+*.log
+
+# VS Code
+.vscode/
+
+# Rider
+.idea/
+
+# Environment
+appsettings.json
