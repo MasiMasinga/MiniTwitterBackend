@@ -42,15 +42,15 @@ The application should now be running at `http://localhost:5145`.
 
 ### Comments Endpoints
 
-- `POST /api/Comment/<id>/Tweet`: Add a comment to a specific tweet.
-- `GET /api/Comments/<id>/Tweet`: Get all comments for a specific tweet.
-- `POST /api/Comment/<id>/Like`: Like a Comment on tweet.
-- `PUT /api/Comment/<id>/Unlike`: Unlike a Comment on tweet.
+- `POST /api/Comment/<tweet_id>/Tweet`: Add a comment to a specific tweet.
+- `GET /api/Comments/<tweet_id>/Tweet`: Get all comments for a specific tweet.
+- `POST /api/Comment/<tweet_id>/Like`: Like a Comment on tweet.
+- `PUT /api/Comment/<tweet_id>/Unlike`: Unlike a Comment on tweet.
 
 ### Retweet Endpoints
 
-- `POST /api/Retweet/<id>/Comment`: Retweet a Comment.
-- `POST /api/Retweet/<id>/Tweet`: Retweet a Tweet.
+- `POST /api/Retweet/<comment_id>/Comment`: Retweet a Comment.
+- `POST /api/Retweet/<tweet_id>/Tweet`: Retweet a Tweet.
 
 ### Make Payment Endpoints
 
