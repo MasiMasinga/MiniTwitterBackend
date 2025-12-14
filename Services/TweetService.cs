@@ -3,6 +3,7 @@ using Tweet.Data;
 using Microsoft.EntityFrameworkCore;
 using Tweet.Interfaces;
 using TweetModel = Tweet.Models.Tweet;
+using UserModel = User.Models.User;
 
 namespace Tweet.Services
 {
@@ -17,14 +18,30 @@ namespace Tweet.Services
 
         public async Task<CreateTweetDto> CreateTweet(CreateTweetDto tweet)
         {
+
+            var testUser = new UserModel
+            {
+                Username = "testuser1",
+                FirstName = "Test",
+                LastName = "User",
+                Email = "test1@example.com",
+                Password = "test123",
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
+            };
+
+            _context.User.Add(testUser);
+            await _context.SaveChangesAsync();
+            var userId = testUser.Id;
+
             try
             {
                 var newTweet = new TweetModel
                 {
                     PostMessage = tweet.PostMessage,
+                    UserId = userId,
                     CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow,
-                    UserId = tweet.UserId
+                    UpdatedAt = DateTime.UtcNow
                 };
 
                 _context.Tweets.Add(newTweet);
@@ -51,7 +68,10 @@ namespace Tweet.Services
                 .Select(t => new TweetDto
                 {
                     Id = t.Id,
+                    UserId = t.UserId,
                     PostMessage = t.PostMessage,
+                    RetweetsCount = t.RetweetsCount,
+                    LikesCount = t.LikesCount,
                     CreatedAt = t.CreatedAt,
                     UpdatedAt = t.UpdatedAt
                 }).ToListAsync();
@@ -64,7 +84,10 @@ namespace Tweet.Services
                 .Select(t => new TweetDto
                 {
                     Id = t.Id,
+                    UserId = t.UserId,
                     PostMessage = t.PostMessage,
+                    RetweetsCount = t.RetweetsCount,
+                    LikesCount = t.LikesCount,
                     CreatedAt = t.CreatedAt,
                     UpdatedAt = t.UpdatedAt
                 }).FirstOrDefaultAsync();
