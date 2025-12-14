@@ -1,4 +1,4 @@
-namespace MiniTweeterBackend.Models
+namespace UserTweetQuota.Models
 {
     public class UserTweetQuota
     {

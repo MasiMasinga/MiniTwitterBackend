@@ -1,6 +1,7 @@
+using Likes.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace MiniTweeterBackend.Models
+namespace Retweet.Models
 {
 
     public class Retweet

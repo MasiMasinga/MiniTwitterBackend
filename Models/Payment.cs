@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using MiniTweeterBackend.Helpers.Constants;
 
-namespace MiniTweeterBackend.Models
+namespace Payment.Models
 {
 
     public class Payments

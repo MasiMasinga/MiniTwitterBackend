@@ -3,8 +3,8 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using MiniTweeterBackend.Data;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using Tweet.Data;
 
 #nullable disable
 
@@ -22,7 +22,7 @@ namespace MiniTwitterBackend.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("MiniTweeterBackend.Models.Comment", b =>
+            modelBuilder.Entity("Comment.Models.Comment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -66,7 +66,7 @@ namespace MiniTwitterBackend.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("MiniTweeterBackend.Models.Likes", b =>
+            modelBuilder.Entity("Likes.Models.Likes", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -101,7 +101,7 @@ namespace MiniTwitterBackend.Migrations
                     b.ToTable("Likes");
                 });
 
-            modelBuilder.Entity("MiniTweeterBackend.Models.Payments", b =>
+            modelBuilder.Entity("Payment.Models.Payments", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -144,7 +144,7 @@ namespace MiniTwitterBackend.Migrations
                     b.ToTable("Payments");
                 });
 
-            modelBuilder.Entity("MiniTweeterBackend.Models.Retweet", b =>
+            modelBuilder.Entity("Retweet.Models.Retweet", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -179,7 +179,7 @@ namespace MiniTwitterBackend.Migrations
                     b.ToTable("Retweets");
                 });
 
-            modelBuilder.Entity("MiniTweeterBackend.Models.Tweet", b =>
+            modelBuilder.Entity("Tweet.Models.Tweet", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -218,7 +218,7 @@ namespace MiniTwitterBackend.Migrations
                     b.ToTable("Tweets");
                 });
 
-            modelBuilder.Entity("MiniTweeterBackend.Models.User", b =>
+            modelBuilder.Entity("User.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -267,7 +267,7 @@ namespace MiniTwitterBackend.Migrations
                     b.ToTable("User");
                 });
 
-            modelBuilder.Entity("MiniTweeterBackend.Models.UserTweetQuota", b =>
+            modelBuilder.Entity("UserTweetQuota.Models.UserTweetQuota", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -307,60 +307,60 @@ namespace MiniTwitterBackend.Migrations
                     b.ToTable("UserTweetQuota");
                 });
 
-            modelBuilder.Entity("MiniTweeterBackend.Models.Comment", b =>
+            modelBuilder.Entity("Comment.Models.Comment", b =>
                 {
-                    b.HasOne("MiniTweeterBackend.Models.Tweet", null)
+                    b.HasOne("Tweet.Models.Tweet", null)
                         .WithMany()
                         .HasForeignKey("TweetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MiniTweeterBackend.Models.User", null)
+                    b.HasOne("User.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MiniTweeterBackend.Models.Likes", b =>
+            modelBuilder.Entity("Likes.Models.Likes", b =>
                 {
-                    b.HasOne("MiniTweeterBackend.Models.User", null)
+                    b.HasOne("User.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MiniTweeterBackend.Models.Payments", b =>
+            modelBuilder.Entity("Payment.Models.Payments", b =>
                 {
-                    b.HasOne("MiniTweeterBackend.Models.User", null)
+                    b.HasOne("User.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MiniTweeterBackend.Models.Retweet", b =>
+            modelBuilder.Entity("Retweet.Models.Retweet", b =>
                 {
-                    b.HasOne("MiniTweeterBackend.Models.User", null)
+                    b.HasOne("User.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MiniTweeterBackend.Models.Tweet", b =>
+            modelBuilder.Entity("Tweet.Models.Tweet", b =>
                 {
-                    b.HasOne("MiniTweeterBackend.Models.User", null)
+                    b.HasOne("User.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("MiniTweeterBackend.Models.UserTweetQuota", b =>
+            modelBuilder.Entity("UserTweetQuota.Models.UserTweetQuota", b =>
                 {
-                    b.HasOne("MiniTweeterBackend.Models.User", null)
+                    b.HasOne("User.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)

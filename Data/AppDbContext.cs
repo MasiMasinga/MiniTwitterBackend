@@ -1,7 +1,13 @@
+using CommentModel = Comment.Models.Comment;
+using LikesModel = Likes.Models.Likes;
+using PaymentModel = Payment.Models.Payments;
+using RetweetModel = Retweet.Models.Retweet;
+using TweetModel = Tweet.Models.Tweet;
+using UserModel = User.Models.User;
+using UserTweetQuotaModel = UserTweetQuota.Models.UserTweetQuota;
 using Microsoft.EntityFrameworkCore;
-using MiniTweeterBackend.Models;
 
-namespace MiniTweeterBackend.Data
+namespace Tweet.Data
 {
     public class AppDbContext : DbContext
     {
@@ -9,39 +15,39 @@ namespace MiniTweeterBackend.Data
         {
         }
 
-        public DbSet<Comment> Comments { get; set; }
-        public DbSet<Likes> Likes { get; set; }
-        public DbSet<Payments> Payments { get; set; }
-        public DbSet<Retweet> Retweets { get; set; }
-        public DbSet<Tweet> Tweets { get; set; }
-        public DbSet<User> User { get; set; }
-        public DbSet<UserTweetQuota> UserTweetQuota { get; set; }
+        public DbSet<CommentModel> Comments { get; set; }
+        public DbSet<LikesModel> Likes { get; set; }
+        public DbSet<PaymentModel> Payments { get; set; }
+        public DbSet<RetweetModel> Retweets { get; set; }
+        public DbSet<TweetModel> Tweets { get; set; }
+        public DbSet<UserModel> User { get; set; }
+        public DbSet<UserTweetQuotaModel> UserTweetQuota { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<User>(entity =>
+            modelBuilder.Entity<UserModel>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 entity.HasIndex(e => e.Username).IsUnique();
                 entity.HasIndex(e => e.Email).IsUnique();
             });
 
-            modelBuilder.Entity<Tweet>(entity =>
+            modelBuilder.Entity<TweetModel>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 entity.HasIndex(e => e.UserId);
                 entity.Property(e => e.RetweetsCount).HasDefaultValue(0);
                 entity.Property(e => e.LikesCount).HasDefaultValue(0);
 
-                entity.HasOne<User>()
+                entity.HasOne<UserModel>()
                     .WithMany()
                     .HasForeignKey(e => e.UserId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
-            modelBuilder.Entity<Comment>(entity =>
+            modelBuilder.Entity<CommentModel>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 entity.HasIndex(e => e.UserId);
@@ -49,44 +55,44 @@ namespace MiniTweeterBackend.Data
                 entity.Property(e => e.RetweetsCount).HasDefaultValue(0);
                 entity.Property(e => e.LikesCount).HasDefaultValue(0);
 
-                entity.HasOne<User>()
+                entity.HasOne<UserModel>()
                     .WithMany()
                     .HasForeignKey(e => e.UserId)
                     .OnDelete(DeleteBehavior.Restrict);
 
-                entity.HasOne<Tweet>()
+                entity.HasOne<TweetModel>()
                     .WithMany()
                     .HasForeignKey(e => e.TweetId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
 
-            modelBuilder.Entity<Likes>(entity =>
+            modelBuilder.Entity<LikesModel>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 entity.HasIndex(e => e.UserId);
                 entity.HasIndex(e => new { e.TargetType, e.TargetId });
                 entity.HasIndex(e => new { e.UserId, e.TargetType, e.TargetId }).IsUnique();
 
-                entity.HasOne<User>()
+                entity.HasOne<UserModel>()
                     .WithMany()
                     .HasForeignKey(e => e.UserId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
-            modelBuilder.Entity<Retweet>(entity =>
+            modelBuilder.Entity<RetweetModel>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 entity.HasIndex(e => e.UserId);
                 entity.HasIndex(e => new { e.TargetType, e.TargetId });
                 entity.HasIndex(e => new { e.UserId, e.TargetType, e.TargetId }).IsUnique();
 
-                entity.HasOne<User>()
+                entity.HasOne<UserModel>()
                     .WithMany()
                     .HasForeignKey(e => e.UserId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
-            modelBuilder.Entity<Payments>(entity =>
+            modelBuilder.Entity<PaymentModel>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 entity.HasIndex(e => e.UserId);
@@ -100,13 +106,13 @@ namespace MiniTweeterBackend.Data
                         v => System.Text.Json.JsonSerializer.Deserialize<Dictionary<string, object>>(v, (System.Text.Json.JsonSerializerOptions?)null) ?? new Dictionary<string, object>())
                     .HasColumnType("jsonb");
 
-                entity.HasOne<User>()
+                entity.HasOne<UserModel>()
                     .WithMany()
                     .HasForeignKey(e => e.UserId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
 
-            modelBuilder.Entity<UserTweetQuota>(entity =>
+            modelBuilder.Entity<UserTweetQuotaModel>(entity =>
             {
                 entity.HasKey(e => e.Id);
                 entity.HasIndex(e => e.UserId);
@@ -114,7 +120,7 @@ namespace MiniTweeterBackend.Data
                 entity.Property(e => e.TweetsCount).HasDefaultValue(0);
                 entity.Property(e => e.HasUnlimited).HasDefaultValue(false);
 
-                entity.HasOne<User>()
+                entity.HasOne<UserModel>()
                     .WithMany()
                     .HasForeignKey(e => e.UserId)
                     .OnDelete(DeleteBehavior.Restrict);

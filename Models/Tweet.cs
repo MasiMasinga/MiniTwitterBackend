@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace MiniTweeterBackend.Models
+namespace Tweet.Models
 {
     public class Tweet
     {

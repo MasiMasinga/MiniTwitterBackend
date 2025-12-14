@@ -1,7 +1,10 @@
-﻿services:
+services:
   minitwitterbackend:
     image: minitwitterbackend
     build:
       context: .
       dockerfile: Dockerfile
+    
+    ports:
+      - 5145:8080
 
