@@ -1,4 +1,5 @@
 using Comment.Dto;
+using Comment.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Comment.Controller
@@ -7,8 +8,104 @@ namespace Comment.Controller
   [Route("api/[controller]")]
 
   public class CommentController : ControllerBase
+  {
+    private readonly ICommentService _commentService;
+
+    public CommentController(ICommentService commentService)
     {
-       
+      _commentService = commentService;
     }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateComment([FromBody] CreateCommentDto commentDto)
+    {
+      try
+      {
+        if (commentDto == null)
+        {
+          return BadRequest("Comment data is null.");
+        }
+
+        if (string.IsNullOrWhiteSpace(commentDto.CommentMessage))
+        {
+          return BadRequest("Comment content cannot be empty.");
+        }
+
+        if (commentDto.CommentMessage.Length > 280)
+        {
+          return BadRequest("Comment message exceeds the maximum length of 280 characters.");
+        }
+
+        var createdComment = await _commentService.CreateComment(commentDto);
+        return CreatedAtAction(nameof(GetCommentById), new { id = createdComment.Id }, createdComment);
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, $"Internal server error: {ex.Message}");
+      }
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetCommentById(int id)
+    {
+      try
+      {
+        var comment = await _commentService.GetCommentById(id);
+
+        if (comment == null)
+        {
+          return NotFound();
+        }
+
+        return Ok(comment);
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, $"Internal server error: {ex.Message}");
+      }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAllComments()
+    {
+      try
+      {
+        var comments = await _commentService.GetAllComments();
+        return Ok(comments);
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, $"Internal server error: {ex.Message}");
+      }
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateComment(int id, [FromBody] CommentDto commentDto)
+    {
+      try
+      {
+        var updatedComment = await _commentService.UpdateComment(id, commentDto);
+        return Ok(updatedComment);
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, $"Internal server error: {ex.Message}");
+      }
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteComment(int id)
+    {
+      try
+      {
+        var deletedComment = await _commentService.DeleteComment(id);
+        return Ok(deletedComment);
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, $"Internal server error: {ex.Message}");
+      }
+    }
+  }
 }
 

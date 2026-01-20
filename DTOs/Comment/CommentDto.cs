@@ -1,6 +1,6 @@
 namespace Comment.Dto
 {
-  public class Comment
+  public class CommentDto
   {
     public int Id { get; set; }
     public int UserId { get; set; }

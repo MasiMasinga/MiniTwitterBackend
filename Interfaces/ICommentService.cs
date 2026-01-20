@@ -4,6 +4,10 @@ namespace Comment.Interfaces
 {
   public interface ICommentService
   {
-    
+    Task<CreateCommentDto> CreateComment(CreateCommentDto comment);
+    Task<List<CommentDto>> GetAllComments();
+    Task<CommentDto> GetCommentById(int id);
+    Task<CommentDto> UpdateComment(int id, CommentDto comment);
+    Task<CommentDto> DeleteComment(int id);
   }
 }
