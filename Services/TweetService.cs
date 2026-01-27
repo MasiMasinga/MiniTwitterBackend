@@ -151,5 +151,91 @@ namespace Tweet.Services
             }
         }
 
+        public async Task<TweetDto?> LikeTweet(int id)
+        {
+            try
+            {
+                var tweet = await _context.Tweets.FindAsync(id);
+
+                tweet.LikesCount += 1;
+                tweet.UpdatedAt = DateTime.UtcNow;
+
+                await _context.SaveChangesAsync();
+
+                return new TweetDto
+                {
+                    Id = tweet.Id,
+                    UserId = tweet.UserId,
+                    PostMessage = tweet.PostMessage,
+                    RetweetsCount = tweet.RetweetsCount,
+                    LikesCount = tweet.LikesCount,
+                    CreatedAt = tweet.CreatedAt,
+                    UpdatedAt = tweet.UpdatedAt
+                };
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<TweetDto?> UnlikeTweet(int id)
+        {
+            try
+            {
+                var tweet = await _context.Tweets.FindAsync(id);
+
+                if (tweet.LikesCount > 0)
+                {
+                    tweet.LikesCount -= 1;
+                }
+                tweet.UpdatedAt = DateTime.UtcNow;
+
+                await _context.SaveChangesAsync();
+
+                return new TweetDto
+                {
+                    Id = tweet.Id,
+                    UserId = tweet.UserId,
+                    PostMessage = tweet.PostMessage,
+                    RetweetsCount = tweet.RetweetsCount,
+                    LikesCount = tweet.LikesCount,
+                    CreatedAt = tweet.CreatedAt,
+                    UpdatedAt = tweet.UpdatedAt
+                };
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        public async Task<TweetDto?> RetweetTweet(int id)
+        {
+            try
+            {
+                var tweet = await _context.Tweets.FindAsync(id);
+
+                tweet.RetweetsCount += 1;
+                tweet.UpdatedAt = DateTime.UtcNow;
+
+                await _context.SaveChangesAsync();
+
+                return new TweetDto
+                {
+                    Id = tweet.Id,
+                    UserId = tweet.UserId,
+                    PostMessage = tweet.PostMessage,
+                    RetweetsCount = tweet.RetweetsCount,
+                    LikesCount = tweet.LikesCount,
+                    CreatedAt = tweet.CreatedAt,
+                    UpdatedAt = tweet.UpdatedAt
+                };
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }

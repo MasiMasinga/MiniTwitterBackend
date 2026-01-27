@@ -76,5 +76,46 @@ namespace Tweet.Controller
             return Ok(deleteTweet);
         }
 
+        [HttpPut("{id}")]
+        public async Task<ActionResult<TweetDto>> LikeTweet(int id)
+        {
+            try
+            {
+                var likedTweet = await _tweetService.LikeTweet(id);
+                return Ok(likedTweet);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<TweetDto>> UnlikeTweet(int id)
+        {
+            try
+            {
+                var unlikedTweet = await _tweetService.UnlikeTweet(id);
+                return Ok(unlikedTweet);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<TweetDto>> RetweetTweet(int id)
+        {
+            try
+            {
+                var retweetedTweet = await _tweetService.RetweetTweet(id);
+                return Ok(retweetedTweet);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
 }
