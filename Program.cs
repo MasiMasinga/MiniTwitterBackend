@@ -1,6 +1,8 @@
 using Tweet.Data;
 using Tweet.Services;
 using Tweet.Interfaces;
+using Comment.Services;
+using Comment.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +18,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<ITweetService, TweetService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
 
 var app = builder.Build();
 
