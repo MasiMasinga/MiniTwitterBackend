@@ -106,6 +106,45 @@ namespace Comment.Controller
         return StatusCode(500, $"Internal server error: {ex.Message}");
       }
     }
+
+    public async Task<IActionResult> LikeComment(int id)
+    {
+      try
+      {
+        var likedComment = await _commentService.LikeComment(id);
+        return Ok(likedComment);
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, $"Internal server error: {ex.Message}");
+      }
+    }
+
+    public async Task<IActionResult> UnlikeComment(int id)
+    {
+      try
+      {
+        var unlikedComment = await _commentService.UnlikeComment(id);
+        return Ok(unlikedComment);
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, $"Internal server error: {ex.Message}");
+      }
+    }
+
+    public async Task<IActionResult> RetweetComment(int id)
+    {
+      try
+      {
+        var retweetedComment = await _commentService.RetweetComment(id);
+        return Ok(retweetedComment);
+      }
+      catch (Exception ex)
+      {
+        return StatusCode(500, $"Internal server error: {ex.Message}");
+      }
+    }
   }
 }
 

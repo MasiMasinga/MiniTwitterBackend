@@ -26,7 +26,8 @@ namespace Comment.Services
           CommentMessage = comment.CommentMessage,
           UserId = comment.UserId,
           CreatedAt = DateTime.UtcNow,
-          UpdatedAt = DateTime.UtcNow
+          UpdatedAt = DateTime.UtcNow,
+          TweetId = comment.TweetId,
         };
 
         _context.Comments.Add(newComment);
@@ -36,6 +37,7 @@ namespace Comment.Services
         {
           Id = newComment.Id,
           UserId = newComment.UserId,
+          TweetId = newComment.TweetId,
           CommentMessage = comment.CommentMessage,
           CreatedAt = newComment.CreatedAt,
           UpdatedAt = newComment.UpdatedAt
@@ -114,6 +116,66 @@ namespace Comment.Services
       }
 
       _context.Comments.Remove(comment);
+      await _context.SaveChangesAsync();
+
+      return new CommentDto
+      {
+        Id = comment.Id,
+        UserId = comment.UserId,
+        CommentMessage = comment.CommentMessage,
+        CreatedAt = comment.CreatedAt,
+        UpdatedAt = comment.UpdatedAt
+      };
+    }
+
+    public async Task<CommentDto> LikeComment(int id)
+    {
+      var comment = await _context.Comments.FindAsync(id);
+
+      var likeCount = comment.LikesCount + 1;
+      comment.LikesCount = likeCount;
+
+      _context.Comments.Update(comment);
+      await _context.SaveChangesAsync();
+
+      return new CommentDto
+      {
+        Id = comment.Id,
+        UserId = comment.UserId,
+        CommentMessage = comment.CommentMessage,
+        CreatedAt = comment.CreatedAt,
+        UpdatedAt = comment.UpdatedAt
+      };
+    }
+
+    public async Task<CommentDto> UnlikeComment(int id)
+    {
+      var comment = await _context.Comments.FindAsync(id);
+
+      var likeCount = comment.LikesCount - 1;
+      comment.LikesCount = likeCount < 0 ? 0 : likeCount;
+
+      _context.Comments.Update(comment);
+      await _context.SaveChangesAsync();
+
+      return new CommentDto
+      {
+        Id = comment.Id,
+        UserId = comment.UserId,
+        CommentMessage = comment.CommentMessage,
+        CreatedAt = comment.CreatedAt,
+        UpdatedAt = comment.UpdatedAt
+      };
+    }
+
+    public async Task<CommentDto> RetweetComment(int id)
+    {
+      var comment = await _context.Comments.FindAsync(id);
+
+      var retweetCount = comment.RetweetsCount + 1;
+      comment.RetweetsCount = retweetCount;
+
+      _context.Comments.Update(comment);
       await _context.SaveChangesAsync();
 
       return new CommentDto
