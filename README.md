@@ -4,6 +4,10 @@
 
 This is a backend application developed using .Net Web API. It serves as the API for a social media application that is a clone of Twitter. The application supports user authentication, and allows users to create, read, update, and delete (CRUD) tweets. Users can also comment on tweets and like them.
 
+## API Endpoint
+
+https://minitwitterbackend-aznfhq.fly.dev/
+
 ## Installation
 
 Ensure you have Docker and Docker Compose installed on your machine.
