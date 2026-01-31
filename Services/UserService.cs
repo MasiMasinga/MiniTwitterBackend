@@ -210,10 +210,6 @@ namespace User.Services
       try
       {
         var existingUser = await _context.User.FirstOrDefaultAsync(u => u.Id == id);
-        if (existingUser == null)
-        {
-          throw new Exception("User not found.");
-        }
 
         return new UserDto
         {
@@ -234,40 +230,7 @@ namespace User.Services
     {
       try
       {
-        if (string.IsNullOrEmpty(user.Username) || user.Username.Length < 3)
-        {
-          throw new Exception("Username must be at least 3 characters long.");
-        }
-
-        if (string.IsNullOrEmpty(user.FirstName))
-        {
-          throw new Exception("First name cannot be empty.");
-        }
-
-        if (string.IsNullOrEmpty(user.LastName))
-        {
-          throw new Exception("Last name cannot be empty.");
-        }
-
-        if (string.IsNullOrEmpty(user.Email) || !user.Email.Contains("@"))
-        {
-          throw new Exception("Invalid email format.");
-        }
-
-        if (await _context.User.AnyAsync(u => u.Email == user.Email && u.Id != id))
-        {
-          throw new Exception("Another user with this email already exists.");
-        }
-
-        if (string.IsNullOrEmpty(user.Email))
-        {
-          throw new Exception("Email cannot be empty.");
-        }
-
-        if (string.IsNullOrEmpty(user.Username))
-        {
-          throw new Exception("Username cannot be empty.");
-        }
+        await UserValidation.ValidateUpdateUserDetailsAsync(_context, user, id);
 
         var existingUser = await _context.User.FirstOrDefaultAsync(u => u.Id == id);
         if (existingUser == null)
@@ -303,15 +266,7 @@ namespace User.Services
     {
       try
       {
-        if (string.IsNullOrEmpty(user.Password) || user.Password.Length < 6)
-        {
-          throw new Exception("Password must be at least 6 characters long.");
-        }
-
-        if (!user.Password.Contains(" "))
-        {
-          throw new Exception("Password cannot contain spaces.");
-        }
+        UserValidation.ValidateUpdatePassword(user);
 
         var existingUser = await _context.User.FirstOrDefaultAsync(u => u.Id == id);
         if (existingUser == null)

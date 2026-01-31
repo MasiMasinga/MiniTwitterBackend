@@ -54,16 +54,54 @@ public static class UserValidation
     }
   }
 
-  public static void ValidateLogin(LoginUserDto user)
+  public static async Task ValidateUpdateUserDetailsAsync(AppDbContext context, UserDto user, int id)
   {
-    if (string.IsNullOrWhiteSpace(user.EmailOrUsername) || string.IsNullOrWhiteSpace(user.Password))
+    if (string.IsNullOrWhiteSpace(user.Username))
     {
-      throw new Exception("Email/Username and password cannot be empty.");
+      throw new Exception("Username cannot be empty.");
     }
 
-    if (user.Password.Length < 6)
+    if (user.Username.Length < 3)
+    {
+      throw new Exception("Username must be at least 3 characters long.");
+    }
+
+    if (string.IsNullOrWhiteSpace(user.FirstName))
+    {
+      throw new Exception("First name cannot be empty.");
+    }
+
+    if (string.IsNullOrWhiteSpace(user.LastName))
+    {
+      throw new Exception("Last name cannot be empty.");
+    }
+
+    if (string.IsNullOrWhiteSpace(user.Email))
+    {
+      throw new Exception("Email cannot be empty.");
+    }
+
+    if (!user.Email.Contains("@"))
+    {
+      throw new Exception("Invalid email format.");
+    }
+
+    if (await context.User.AnyAsync(u => u.Email == user.Email && u.Id != id))
+    {
+      throw new Exception("Another user with this email already exists.");
+    }
+  }
+
+  public static void ValidateUpdatePassword(CreateUserDto user)
+  {
+    if (string.IsNullOrWhiteSpace(user.Password) || user.Password.Length < 6)
     {
       throw new Exception("Password must be at least 6 characters long.");
+    }
+
+    if (user.Password.Contains(" "))
+    {
+      throw new Exception("Password cannot contain spaces.");
     }
   }
 }
