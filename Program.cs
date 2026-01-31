@@ -16,7 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+  options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -49,27 +49,18 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddControllers();
 
-var jwtIssuer = builder.Configuration["Jwt:Issuer"];
-var jwtAudience = builder.Configuration["Jwt:Audience"];
-var jwtKey = builder.Configuration["Jwt:Key"];
-
-if (string.IsNullOrWhiteSpace(jwtKey))
-{
-  throw new InvalidOperationException("Missing JWT configuration. Please set Jwt:Key in appsettings.");
-}
-
 builder.Services
   .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
   .AddJwtBearer(options =>
   {
     options.TokenValidationParameters = new TokenValidationParameters
     {
-      ValidateIssuer = !string.IsNullOrWhiteSpace(jwtIssuer),
-      ValidIssuer = jwtIssuer,
-      ValidateAudience = !string.IsNullOrWhiteSpace(jwtAudience),
-      ValidAudience = jwtAudience,
+      ValidateIssuer = !string.IsNullOrWhiteSpace(builder.Configuration["Jwt:Issuer"]),
+      ValidIssuer = builder.Configuration["Jwt:Issuer"],
+      ValidateAudience = !string.IsNullOrWhiteSpace(builder.Configuration["Jwt:Audience"]),
+      ValidAudience = builder.Configuration["Jwt:Audience"],
       ValidateIssuerSigningKey = true,
-      IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+      IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
       ValidateLifetime = true,
       ClockSkew = TimeSpan.Zero
     };
@@ -77,16 +68,12 @@ builder.Services
 
 builder.Services.AddAuthorization();
 
-var corsOrigins =
-  builder.Configuration.GetSection("Cors:Origins").Get<string[]>() ??
-  new[] { "http://localhost:3000", "http://localhost:5173" };
-
 builder.Services.AddCors(options =>
 {
   options.AddPolicy("CorsPolicy", policy =>
   {
     policy
-      .WithOrigins(corsOrigins)
+      .WithOrigins(builder.Configuration.GetSection("Cors:Origins").Get<string[]>())
       .AllowAnyHeader()
       .AllowAnyMethod();
   });
@@ -100,15 +87,19 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
-    app.UseSwagger();
-    app.UseSwaggerUI();
+  app.MapOpenApi();
+  app.UseSwagger();
+  app.UseSwaggerUI();
 }
 
 app.MapGet("/", () => "🚀 Mini Tweeter Backend is running!");
 
-app.UseHttpsRedirection();
 app.UseCors("CorsPolicy");
+if (!app.Environment.IsDevelopment())
+{
+  app.UseHttpsRedirection();
+}
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

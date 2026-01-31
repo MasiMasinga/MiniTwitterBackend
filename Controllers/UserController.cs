@@ -32,7 +32,7 @@ namespace User.Controller
     public async Task<ActionResult<CreateUserDto>> LoginUser([FromBody] LoginUserDto user)
     {
       var result = await _userService.LoginUser(user);
-        
+
       return Ok(result);
     }
 
@@ -41,7 +41,7 @@ namespace User.Controller
     public async Task<ActionResult<CreateUserDto>> GoogleAuth([FromBody] GoogleAuthDto request)
     {
       var result = await _userService.GoogleAuth(request);
-        
+
       return Ok(result);
     }
 
@@ -55,7 +55,7 @@ namespace User.Controller
       }
 
       var result = await _userService.GetUserDetails(userId);
-        
+
       return Ok(result);
     }
 
@@ -69,7 +69,7 @@ namespace User.Controller
       }
 
       var result = await _userService.UpdateUserDetails(user, userId);
-        
+
       return Ok(result);
     }
 
@@ -83,9 +83,9 @@ namespace User.Controller
       }
 
       var result = await _userService.UpdateUserPassword(user, userId);
-        
+
       return Ok(result);
-    } 
+    }
 
     [HttpDelete("delete-user/{id}")]
     public async Task<ActionResult<bool>> DeleteUser(int id)
@@ -97,7 +97,7 @@ namespace User.Controller
       }
 
       var result = await _userService.DeleteUser(userId);
-        
+
       return Ok(result);
     }
   }
