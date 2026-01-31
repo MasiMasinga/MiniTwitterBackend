@@ -19,6 +19,21 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers();
 
+var corsOrigins =
+  builder.Configuration.GetSection("Cors:Origins").Get<string[]>() ??
+  new[] { "http://localhost:3000", "http://localhost:5173" };
+
+builder.Services.AddCors(options =>
+{
+  options.AddPolicy("CorsPolicy", policy =>
+  {
+    policy
+      .WithOrigins(corsOrigins)
+      .AllowAnyHeader()
+      .AllowAnyMethod();
+  });
+});
+
 builder.Services.AddScoped<ITweetService, TweetService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -35,6 +50,7 @@ if (app.Environment.IsDevelopment())
 app.MapGet("/", () => "🚀 Mini Tweeter Backend is running!");
 
 app.UseHttpsRedirection();
+app.UseCors("CorsPolicy");
 app.MapControllers();
 app.Run();
  

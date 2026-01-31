@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using MiniTwitterBackend.Helpers.Validation;
 using User.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Google.Apis.Auth;
 using UserModel = User.Models.User;
 
 namespace User.Services
@@ -11,11 +12,13 @@ namespace User.Services
   public class UserService : IUserService
   {
     private readonly AppDbContext _context;
+    private readonly IConfiguration _configuration;
     private readonly PasswordHasher<UserModel> _passwordHasher = new();
 
-    public UserService(AppDbContext context)
+    public UserService(AppDbContext context, IConfiguration configuration)
     {
       _context = context;
+      _configuration = configuration;
     }
 
     public async Task<CreateUserDto> RegisterUser(CreateUserDto user)
@@ -89,11 +92,102 @@ namespace User.Services
       }
     }
 
-    public async Task<CreateUserDto> GoogleAuth(CreateUserDto user)
+    public async Task<CreateUserDto> GoogleAuth(GoogleAuthDto request)
     {
       try
       {
-        throw new NotImplementedException("GoogleAuth is not implemented yet.");
+        if (string.IsNullOrWhiteSpace(request.IdToken))
+        {
+          throw new Exception("Google ID token is required.");
+        }
+
+        var googleClientId = _configuration["Authentication:Google:ClientId"];
+        if (string.IsNullOrWhiteSpace(googleClientId))
+        {
+          throw new Exception(
+            "Google ClientId is not configured. Please set Authentication:Google:ClientId in appsettings.");
+        }
+
+        var payload = await GoogleJsonWebSignature.ValidateAsync(
+          request.IdToken,
+          new GoogleJsonWebSignature.ValidationSettings
+          {
+            Audience = new[] { googleClientId }
+          }
+        );
+
+        if (payload == null)
+        {
+          throw new Exception("Invalid Google token.");
+        }
+
+        if (payload.EmailVerified != true)
+        {
+          throw new Exception("Google email is not verified.");
+        }
+
+        if (string.IsNullOrWhiteSpace(payload.Email))
+        {
+          throw new Exception("Google token did not include an email.");
+        }
+
+        var existingUser = await _context.User.FirstOrDefaultAsync(u => u.Email == payload.Email);
+        if (existingUser != null)
+        {
+          return new CreateUserDto
+          {
+            Id = existingUser.Id,
+            Username = existingUser.Username,
+            FirstName = existingUser.FirstName,
+            LastName = existingUser.LastName,
+            Email = existingUser.Email
+          };
+        }
+
+        var baseUsername = payload.Email.Split('@')[0].Trim();
+        if (string.IsNullOrWhiteSpace(baseUsername))
+        {
+          baseUsername = "user";
+        }
+
+        var username = baseUsername.Length > 100 ? baseUsername[..100] : baseUsername;
+        var suffix = 0;
+        while (await _context.User.AnyAsync(u => u.Username == username))
+        {
+          suffix++;
+          var candidate = $"{baseUsername}{suffix}";
+          username = candidate.Length > 100 ? candidate[..100] : candidate;
+          if (suffix > 10_000)
+          {
+            throw new Exception("Could not generate a unique username.");
+          }
+        }
+
+        var newUser = new UserModel
+        {
+          Username = username,
+          FirstName = string.IsNullOrWhiteSpace(payload.GivenName) ? "Google" : payload.GivenName,
+          LastName = string.IsNullOrWhiteSpace(payload.FamilyName) ? "User" : payload.FamilyName,
+          Email = payload.Email,
+          Password = string.Empty,
+          CreatedAt = DateTime.UtcNow,
+          UpdatedAt = DateTime.UtcNow
+        };
+
+        var randomSecret = Guid.NewGuid().ToString("N");
+        newUser.Password = _passwordHasher.HashPassword(newUser, randomSecret);
+
+        _context.User.Add(newUser);
+        await _context.SaveChangesAsync();
+
+        return new CreateUserDto
+        {
+          Id = newUser.Id,
+          Username = newUser.Username,
+          FirstName = newUser.FirstName,
+          LastName = newUser.LastName,
+          Email = newUser.Email
+        };
       }
       catch (Exception ex)
       {

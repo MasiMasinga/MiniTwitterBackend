@@ -32,9 +32,9 @@ namespace User.Controller
     }
 
     [HttpPost("google-auth")]
-    public async Task<ActionResult<CreateUserDto>> GoogleAuth([FromBody] CreateUserDto user)
+    public async Task<ActionResult<CreateUserDto>> GoogleAuth([FromBody] GoogleAuthDto request)
     {
-      var result = await _userService.GoogleAuth(user);
+      var result = await _userService.GoogleAuth(request);
         
       return Ok(result);
     }
