@@ -29,10 +29,10 @@ namespace Tweet.Controller
                 return BadRequest();
             }
 
-            // if (tweet.UserId <= 0)
-            // {
-            //     return BadRequest();
-            // }
+            if (tweet.UserId <= 0)
+            {
+                return BadRequest();
+            }
 
             if (tweet.PostMessage.Length > 280)
             {
