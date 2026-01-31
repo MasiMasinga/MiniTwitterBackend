@@ -1,6 +1,7 @@
 using User.Dto;
 using Tweet.Data;
 using Microsoft.EntityFrameworkCore;
+using MiniTwitterBackend.Helpers.Validation;
 using User.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using UserModel = User.Models.User;
@@ -21,55 +22,7 @@ namespace User.Services
     {
       try
       {
-        if (await _context.User.AnyAsync(u => u.Email == user.Email))
-        {
-          throw new Exception("User with this email already exists.");
-        }
-
-        if (await _context.User.AnyAsync(u => u.Username == user.Username))
-        {
-          throw new Exception("User with this username already exists.");
-        }
-
-        if (string.IsNullOrEmpty(user.Password) || user.Password.Length < 6)
-        {
-          throw new Exception("Password must be at least 6 characters long.");
-        }
-
-        if (!user.Email.Contains("@"))
-        {
-          throw new Exception("Invalid email format.");
-        }
-
-        if (string.IsNullOrEmpty(user.Username) || user.Username.Length < 3)
-        {
-          throw new Exception("Username must be at least 3 characters long.");
-        }
-
-        if (string.IsNullOrEmpty(user.FirstName) || string.IsNullOrEmpty(user.LastName))
-        {
-          throw new Exception("First name and last name cannot be empty.");
-        }
-
-        if (string.IsNullOrEmpty(user.Email))
-        {
-          throw new Exception("Email cannot be empty.");
-        }
-
-        if (string.IsNullOrEmpty(user.Username))
-        {
-          throw new Exception("Username cannot be empty.");
-        }
-
-        if (string.IsNullOrEmpty(user.FirstName))
-        {
-          throw new Exception("First name cannot be empty.");
-        }
-
-        if (string.IsNullOrEmpty(user.LastName))
-        {
-          throw new Exception("Last name cannot be empty.");
-        }
+        await UserValidation.ValidateRegistrationAsync(_context, user);
 
         var newUser = new UserModel
         {
@@ -106,20 +59,7 @@ namespace User.Services
     {
       try
       {
-        if (string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.Password))
-        {
-          throw new Exception("Email and password cannot be empty.");
-        }
-
-        if (!user.Email.Contains("@"))
-        {
-          throw new Exception("Invalid email format.");
-        }
-
-        if (user.Password.Length < 6)
-        {
-          throw new Exception("Password must be at least 6 characters long.");
-        }
+        UserValidation.ValidateLogin(user);
 
         var existingUser = await _context.User.FirstOrDefaultAsync(u => u.Email == user.Email);
 
@@ -301,7 +241,7 @@ namespace User.Services
       try
       {
         var existingUser = await _context.User.FirstOrDefaultAsync(u => u.Id == id);
-        
+
         _context.User.Remove(existingUser);
         await _context.SaveChangesAsync();
 
