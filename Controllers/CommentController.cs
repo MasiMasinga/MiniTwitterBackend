@@ -7,7 +7,7 @@ using System.Security.Claims;
 namespace Comment.Controller
 {
   [ApiController]
-  [Route("api/[controller]")]
+  [Route("api/comment")]
   [Authorize]
 
   public class CommentController : ControllerBase

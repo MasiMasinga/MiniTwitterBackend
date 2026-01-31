@@ -7,7 +7,7 @@ using System.Security.Claims;
 namespace Tweet.Controller
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/tweet")]
     [Authorize]
     public class TweetController : ControllerBase
     {
