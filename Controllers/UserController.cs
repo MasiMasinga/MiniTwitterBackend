@@ -29,7 +29,7 @@ namespace User.Controller
 
     [HttpPost("login")]
     [AllowAnonymous]
-    public async Task<ActionResult<CreateUserDto>> LoginUser([FromBody] CreateUserDto user)
+    public async Task<ActionResult<CreateUserDto>> LoginUser([FromBody] LoginUserDto user)
     {
       var result = await _userService.LoginUser(user);
         

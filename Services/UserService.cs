@@ -59,23 +59,25 @@ namespace User.Services
       }
     }
 
-    public async Task<CreateUserDto> LoginUser(CreateUserDto user)
+    public async Task<CreateUserDto> LoginUser(LoginUserDto user)
     {
       try
       {
-        UserValidation.ValidateLogin(user);
+        var identifier = user.EmailOrUsername.Trim();
+        var normalized = identifier.ToLowerInvariant();
 
-        var existingUser = await _context.User.FirstOrDefaultAsync(u => u.Email == user.Email);
+        var existingUser = await _context.User.FirstOrDefaultAsync(u =>
+          u.Email.ToLower() == normalized || u.Username.ToLower() == normalized);
 
         if (existingUser == null)
         {
-          throw new Exception("Invalid email or password.");
+          throw new Exception("Invalid email/username or password.");
         }
 
         var verifyResult = _passwordHasher.VerifyHashedPassword(existingUser, existingUser.Password, user.Password);
         if (verifyResult == PasswordVerificationResult.Failed)
         {
-          throw new Exception("Invalid email or password.");
+          throw new Exception("Invalid email/username or password.");
         }
 
         var accessToken = JwtTokenHelper.GenerateJwtAccessToken(_configuration, existingUser);

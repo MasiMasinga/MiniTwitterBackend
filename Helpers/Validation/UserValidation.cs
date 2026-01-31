@@ -54,16 +54,11 @@ public static class UserValidation
     }
   }
 
-  public static void ValidateLogin(CreateUserDto user)
+  public static void ValidateLogin(LoginUserDto user)
   {
-    if (string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.Password))
+    if (string.IsNullOrWhiteSpace(user.EmailOrUsername) || string.IsNullOrWhiteSpace(user.Password))
     {
-      throw new Exception("Email and password cannot be empty.");
-    }
-
-    if (!user.Email.Contains("@"))
-    {
-      throw new Exception("Invalid email format.");
+      throw new Exception("Email/Username and password cannot be empty.");
     }
 
     if (user.Password.Length < 6)

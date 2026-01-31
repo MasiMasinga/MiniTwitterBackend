@@ -5,7 +5,7 @@ namespace User.Interfaces
   public interface IUserService
   {
     Task<CreateUserDto> RegisterUser(CreateUserDto user);
-    Task<CreateUserDto> LoginUser(CreateUserDto user);
+    Task<CreateUserDto> LoginUser(LoginUserDto user);
     Task<CreateUserDto> GoogleAuth(GoogleAuthDto request);
     Task<UserDto> GetUserDetails(int id);
     Task<UserDto> UpdateUserDetails(UserDto user, int id);
