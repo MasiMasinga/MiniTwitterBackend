@@ -1,11 +1,14 @@
 using Comment.Dto;
 using Comment.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Comment.Controller
 {
   [ApiController]
   [Route("api/[controller]")]
+  [Authorize]
 
   public class CommentController : ControllerBase
   {
@@ -25,6 +28,13 @@ namespace Comment.Controller
         {
           return BadRequest("Comment data is null.");
         }
+
+        var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+        {
+          return Unauthorized();
+        }
+        commentDto.UserId = userId;
 
         if (string.IsNullOrWhiteSpace(commentDto.CommentMessage))
         {
@@ -51,12 +61,6 @@ namespace Comment.Controller
       try
       {
         var comment = await _commentService.GetCommentById(id);
-
-        if (comment == null)
-        {
-          return NotFound();
-        }
-
         return Ok(comment);
       }
       catch (Exception ex)
@@ -107,6 +111,7 @@ namespace Comment.Controller
       }
     }
 
+    [HttpPut("{id}/like")]
     public async Task<IActionResult> LikeComment(int id)
     {
       try
@@ -120,6 +125,7 @@ namespace Comment.Controller
       }
     }
 
+    [HttpPut("{id}/unlike")]
     public async Task<IActionResult> UnlikeComment(int id)
     {
       try
@@ -133,6 +139,7 @@ namespace Comment.Controller
       }
     }
 
+    [HttpPut("{id}/retweet")]
     public async Task<IActionResult> RetweetComment(int id)
     {
       try

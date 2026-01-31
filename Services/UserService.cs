@@ -1,6 +1,7 @@
 using User.Dto;
 using Tweet.Data;
 using Microsoft.EntityFrameworkCore;
+using MiniTwitterBackend.Helpers.Auth;
 using MiniTwitterBackend.Helpers.Validation;
 using User.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -77,13 +78,16 @@ namespace User.Services
           throw new Exception("Invalid email or password.");
         }
 
+        var accessToken = JwtTokenHelper.GenerateJwtAccessToken(_configuration, existingUser);
+
         return new CreateUserDto
         {
           Id = existingUser.Id,
           Username = existingUser.Username,
           FirstName = existingUser.FirstName,
           LastName = existingUser.LastName,
-          Email = existingUser.Email
+          Email = existingUser.Email,
+          Access = accessToken
         };
       }
       catch (Exception ex)
@@ -134,13 +138,15 @@ namespace User.Services
         var existingUser = await _context.User.FirstOrDefaultAsync(u => u.Email == payload.Email);
         if (existingUser != null)
         {
+          var accessToken = JwtTokenHelper.GenerateJwtAccessToken(_configuration, existingUser);
           return new CreateUserDto
           {
             Id = existingUser.Id,
             Username = existingUser.Username,
             FirstName = existingUser.FirstName,
             LastName = existingUser.LastName,
-            Email = existingUser.Email
+            Email = existingUser.Email,
+            Access = accessToken
           };
         }
 
@@ -180,13 +186,15 @@ namespace User.Services
         _context.User.Add(newUser);
         await _context.SaveChangesAsync();
 
+        var newAccessToken = JwtTokenHelper.GenerateJwtAccessToken(_configuration, newUser);
         return new CreateUserDto
         {
           Id = newUser.Id,
           Username = newUser.Username,
           FirstName = newUser.FirstName,
           LastName = newUser.LastName,
-          Email = newUser.Email
+          Email = newUser.Email,
+          Access = newAccessToken
         };
       }
       catch (Exception ex)

@@ -1,11 +1,14 @@
 using Tweet.Dto;
 using Tweet.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Tweet.Controller
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class TweetController : ControllerBase
     {
         private readonly ITweetService _tweetService;
@@ -24,12 +27,14 @@ namespace Tweet.Controller
                 return BadRequest();
             }
 
-            if (string.IsNullOrEmpty(tweet.PostMessage))
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrWhiteSpace(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
             {
-                return BadRequest();
+                return Unauthorized();
             }
+            tweet.UserId = userId;
 
-            if (tweet.UserId <= 0)
+            if (string.IsNullOrEmpty(tweet.PostMessage))
             {
                 return BadRequest();
             }
@@ -76,7 +81,7 @@ namespace Tweet.Controller
             return Ok(deleteTweet);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}/like")]
         public async Task<ActionResult<TweetDto>> LikeTweet(int id)
         {
             try
@@ -90,7 +95,7 @@ namespace Tweet.Controller
             }
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}/unlike")]
         public async Task<ActionResult<TweetDto>> UnlikeTweet(int id)
         {
             try
@@ -104,7 +109,7 @@ namespace Tweet.Controller
             }
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}/retweet")]
         public async Task<ActionResult<TweetDto>> RetweetTweet(int id)
         {
             try
