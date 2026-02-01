@@ -3,7 +3,6 @@ using Tweet.Data;
 using Microsoft.EntityFrameworkCore;
 using Tweet.Interfaces;
 using TweetModel = Tweet.Models.Tweet;
-using UserModel = User.Models.User;
 
 namespace Tweet.Services
 {
@@ -19,20 +18,7 @@ namespace Tweet.Services
         public async Task<CreateTweetDto> CreateTweet(CreateTweetDto tweet)
         {
 
-            var testUser = new UserModel
-            {
-                Username = "testuser1",
-                FirstName = "Test",
-                LastName = "User",
-                Email = "test1@example.com",
-                Password = "test123",
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
-
-            _context.User.Add(testUser);
-            await _context.SaveChangesAsync();
-            var userId = testUser.Id;
+            var userId = tweet.UserId;
 
             try
             {

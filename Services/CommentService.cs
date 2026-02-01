@@ -3,8 +3,6 @@ using Tweet.Data;
 using Comment.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using CommentModel = Comment.Models.Comment;
-using UserModel = User.Models.User;
-using TweetModel = Tweet.Models.Tweet;
 
 namespace Comment.Services
 {
