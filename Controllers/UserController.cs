@@ -1,5 +1,8 @@
 using User.Dto;
 using User.Interfaces;
+using Tweet.Data;
+using Microsoft.EntityFrameworkCore;
+using MiniTwitterBackend.Helpers.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -12,28 +15,56 @@ namespace User.Controller
   public class UserController : ControllerBase
   {
     private readonly IUserService _userService;
+    private readonly AppDbContext _context;
 
-    public UserController(IUserService userService)
+    public UserController(IUserService userService, AppDbContext context)
     {
       _userService = userService;
+      _context = context;
     }
 
     [HttpPost("register")]
     [AllowAnonymous]
-    public async Task<ActionResult<CreateUserDto>> RegisterUser([FromBody] CreateUserDto user)
+    public async Task<ActionResult<CreateUserDto>> RegisterUser([FromBody] CreateUserDto? user)
     {
-      var result = await _userService.RegisterUser(user);
+      if (user == null)
+      {
+        return BadRequest(new { message = "Request body is required." });
+      }
 
-      return Ok(result);
+      try
+      {
+        await UserValidation.ValidateRegistrationAsync(_context, user);
+
+        var result = await _userService.RegisterUser(user);
+
+        return Ok(result);
+      }
+      catch (Exception ex)
+      {
+        return BadRequest(new { message = ex.Message });
+      }
     }
 
     [HttpPost("login")]
     [AllowAnonymous]
     public async Task<ActionResult<CreateUserDto>> LoginUser([FromBody] LoginUserDto user)
     {
-      var result = await _userService.LoginUser(user);
+      if (user == null)
+      {
+        return BadRequest(new { message = "Request body is required." });
+      }
 
-      return Ok(result);
+      try
+      {
+        var result = await _userService.LoginUser(user);
+
+        return Ok(result);
+      }
+      catch (Exception ex)
+      {
+        return BadRequest(new { message = ex.Message });
+      }
     }
 
     [HttpPost("google-auth")]
@@ -60,7 +91,7 @@ namespace User.Controller
     }
 
     [HttpPut("update-user-details/{id}")]
-    public async Task<ActionResult<UserDto>> UpdateUserDetails([FromBody] UserDto user, int id)
+    public async Task<ActionResult<UserDto>> UpdateUserDetails([FromBody] UserDto? user, int id)
     {
       var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
       if (string.IsNullOrWhiteSpace(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
@@ -68,13 +99,37 @@ namespace User.Controller
         return Unauthorized();
       }
 
-      var result = await _userService.UpdateUserDetails(user, userId);
+      if (id != userId)
+      {
+        return Forbid();
+      }
 
-      return Ok(result);
+      if (user == null)
+      {
+        return BadRequest(new { message = "Request body is required." });
+      }
+
+      if (!await _context.User.AnyAsync(u => u.Id == userId))
+      {
+        return NotFound(new { message = "User not found." });
+      }
+
+      try
+      {
+        await UserValidation.ValidateUpdateUserDetailsAsync(_context, user, userId);
+
+        var result = await _userService.UpdateUserDetails(user, userId);
+
+        return Ok(result);
+      }
+      catch (Exception ex)
+      {
+        return BadRequest(new { message = ex.Message });
+      }
     }
 
     [HttpPut("update-user-password/{id}")]
-    public async Task<ActionResult<CreateUserDto>> UpdateUserPassword([FromBody] CreateUserDto user, int id)
+    public async Task<ActionResult<CreateUserDto>> UpdateUserPassword([FromBody] CreateUserDto? user, int id)
     {
       var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
       if (string.IsNullOrWhiteSpace(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
@@ -82,9 +137,33 @@ namespace User.Controller
         return Unauthorized();
       }
 
-      var result = await _userService.UpdateUserPassword(user, userId);
+      if (id != userId)
+      {
+        return Forbid();
+      }
 
-      return Ok(result);
+      if (user == null)
+      {
+        return BadRequest(new { message = "Request body is required." });
+      }
+
+      if (!await _context.User.AnyAsync(u => u.Id == userId))
+      {
+        return NotFound(new { message = "User not found." });
+      }
+
+      try
+      {
+        UserValidation.ValidateUpdatePassword(user);
+
+        var result = await _userService.UpdateUserPassword(user, userId);
+
+        return Ok(result);
+      }
+      catch (Exception ex)
+      {
+        return BadRequest(new { message = ex.Message });
+      }
     }
 
     [HttpDelete("delete-user/{id}")]

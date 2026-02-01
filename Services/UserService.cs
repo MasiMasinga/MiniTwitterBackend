@@ -2,7 +2,6 @@ using User.Dto;
 using Tweet.Data;
 using Microsoft.EntityFrameworkCore;
 using MiniTwitterBackend.Helpers.Auth;
-using MiniTwitterBackend.Helpers.Validation;
 using User.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Google.Apis.Auth;
@@ -26,8 +25,6 @@ namespace User.Services
     {
       try
       {
-        await UserValidation.ValidateRegistrationAsync(_context, user);
-
         var newUser = new UserModel
         {
           Username = user.Username,
@@ -230,8 +227,6 @@ namespace User.Services
     {
       try
       {
-        await UserValidation.ValidateUpdateUserDetailsAsync(_context, user, id);
-
         var existingUser = await _context.User.FirstOrDefaultAsync(u => u.Id == id);
         if (existingUser == null)
         {
@@ -266,8 +261,6 @@ namespace User.Services
     {
       try
       {
-        UserValidation.ValidateUpdatePassword(user);
-
         var existingUser = await _context.User.FirstOrDefaultAsync(u => u.Id == id);
         if (existingUser == null)
         {
